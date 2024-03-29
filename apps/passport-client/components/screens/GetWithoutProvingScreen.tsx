@@ -49,6 +49,7 @@ export function GetWithoutProvingScreen(): JSX.Element | null {
         return {
           id: pcd.id,
           label: pcdPackage?.getDisplayOptions?.(pcd)?.displayName ?? pcd.id
+          label: pcdPackage?.getDisplayOptions?.(pcd)?.displayName ?? pcd.id
         };
       }),
     [filteredPCDs, pcds]
@@ -63,6 +64,7 @@ export function GetWithoutProvingScreen(): JSX.Element | null {
     if (selectedPCDID === undefined) return;
     const pcd = pcds.getById(selectedPCDID);
     if (pcd === undefined) return;
+    if (pcd === undefined) return;
     const pcdPackage = pcds.getPackage(pcd.type);
     if (pcdPackage === undefined) return;
     const serializedPCD = await pcdPackage.serialize(pcd);
@@ -73,6 +75,7 @@ export function GetWithoutProvingScreen(): JSX.Element | null {
     safeRedirect(request.returnUrl, serializedPCD);
   }, [pcds, request.postMessage, request.returnUrl, selectedPCDID]);
 
+  useLoginIfNoSelf(pendingRequestKeys.getWithoutProving, request);
   useLoginIfNoSelf(pendingRequestKeys.getWithoutProving, request);
 
   if (request.type !== PCDRequestType.GetWithoutProving) {
@@ -118,6 +121,7 @@ export function GetWithoutProvingScreen(): JSX.Element | null {
           <Spacer h={16} />
           <Select
             value={options.find((o) => o.id === selectedPCDID)}
+            onChange={(o): void => setSelectedPCDID(o?.id ?? defaultSelection)}
             onChange={(o): void => setSelectedPCDID(o?.id ?? defaultSelection)}
             options={options}
             noOptionsMessage={(): string => "No matching PCDs"}

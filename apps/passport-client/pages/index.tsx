@@ -1,27 +1,13 @@
-import { RollbarProvider } from "@pcd/client-shared";
 import {
-  CredentialManager,
-  ZUPASS_CREDENTIAL_REQUEST,
   requestOfflineTickets,
   requestOfflineTicketsCheckin
 } from "@pcd/passport-interface";
-import {
-  getErrorMessage,
-  isLocalStorageAvailable,
-  isWebAssemblySupported
-} from "@pcd/util";
+import { isWebAssemblySupported } from "@pcd/util";
 import * as React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { toast } from "react-hot-toast";
 import { HashRouter, Route, Routes } from "react-router-dom";
-import {
-  Button,
-  H1,
-  Spacer,
-  SupportLink,
-  TextCenter
-} from "../components/core";
 import { AddScreen } from "../components/screens/AddScreen/AddScreen";
 import { AddSubscriptionScreen } from "../components/screens/AddSubscriptionScreen";
 import { ChangePasswordScreen } from "../components/screens/ChangePasswordScreen";
@@ -32,7 +18,6 @@ import { GetWithoutProvingScreen } from "../components/screens/GetWithoutProving
 import { HaloScreen } from "../components/screens/HaloScreen/HaloScreen";
 import { HomeScreen } from "../components/screens/HomeScreen/HomeScreen";
 import { ImportBackupScreen } from "../components/screens/ImportBackupScreen";
-import { LocalStorageNotAccessibleScreen } from "../components/screens/LocalStorageNotAccessibleScreen";
 import { AlreadyRegisteredScreen } from "../components/screens/LoginScreens/AlreadyRegisteredScreen";
 import { CreatePasswordScreen } from "../components/screens/LoginScreens/CreatePasswordScreen";
 import { LoginInterstitialScreen } from "../components/screens/LoginScreens/LoginInterstitialScreen";
@@ -51,11 +36,9 @@ import { ServerErrorScreen } from "../components/screens/ServerErrorScreen";
 import { SubscriptionsScreen } from "../components/screens/SubscriptionsScreen";
 import { TermsScreen } from "../components/screens/TermsScreen";
 import {
-  AppContainer,
-  Background,
-  CenterColumn,
-  GlobalBackground
+  AppContainer
 } from "../components/shared/AppContainer";
+import { RollbarProvider } from "../components/shared/RollbarProvider";
 import { useTsParticles } from "../components/shared/useTsParticles";
 import { appConfig } from "../src/appConfig";
 import { useStateContext } from "../src/appHooks";
@@ -63,6 +46,7 @@ import {
   closeBroadcastChannel,
   setupBroadcastChannel
 } from "../src/broadcastChannel";
+import { getOrGenerateCheckinCredential } from "../src/checkin";
 import { Action, StateContext, dispatch } from "../src/dispatch";
 import { Emitter } from "../src/emitter";
 import { loadInitialState } from "../src/loadInitialState";
@@ -75,6 +59,8 @@ import { registerServiceWorker } from "../src/registerServiceWorker";
 import { AppState, StateEmitter } from "../src/state";
 import { pollUser } from "../src/user";
 import { Web3Provider } from "../src/web3Provider";
+
+window.Buffer = window.Buffer || require("buffer").Buffer;
 
 class App extends React.Component<object, AppState> {
   state = undefined as AppState | undefined;
@@ -246,6 +232,20 @@ class App extends React.Component<object, AppState> {
       }
     };
 
+    const generateCheckinCredential = async (): Promise<void> => {
+      // This ensures that the check-in credential is pre-cached before the
+      // first check-in attempt.
+      try {
+        const state = getState();
+        if (!state.identity) {
+          throw new Error("Missing identity");
+        }
+        await getOrGenerateCheckinCredential(state.identity);
+      } catch (e) {
+        console.log("Could not get or generate checkin credential:", e);
+      }
+    };
+
     const doPollServerUpdates = async (): Promise<void> => {
       const state = getState();
       if (
@@ -312,21 +312,13 @@ class App extends React.Component<object, AppState> {
         return;
       }
 
-      const credentialManager = new CredentialManager(
-        getState().identity,
-        getState().pcds,
-        getState().credentialCache
-      );
-
       if (state.checkedinOfflineDevconnectTickets.length > 0) {
         const checkinOfflineTicketsResult = await requestOfflineTicketsCheckin(
           appConfig.zupassServer,
           {
             checkedOfflineInDevconnectTicketIDs:
               state.checkedinOfflineDevconnectTickets.map((t) => t.id),
-            checkerProof: await credentialManager.requestCredential(
-              ZUPASS_CREDENTIAL_REQUEST
-            )
+            checkerProof: await getOrGenerateCheckinCredential(state.identity)
           }
         );
 
@@ -341,9 +333,7 @@ class App extends React.Component<object, AppState> {
       const offlineTicketsResult = await requestOfflineTickets(
         appConfig.zupassServer,
         {
-          checkerProof: await credentialManager.requestCredential(
-            ZUPASS_CREDENTIAL_REQUEST
-          )
+          checkerProof: await getOrGenerateCheckinCredential(state.identity)
         }
       );
 
@@ -363,12 +353,12 @@ class App extends React.Component<object, AppState> {
       setupPolling();
       startJobSyncOfflineCheckins();
       jobCheckConnectivity();
+      generateCheckinCredential();
     };
 
     setupBroadcastChannel(dispatch);
     setupUsingLaserScanning();
     startBackgroundJobs();
-    dispatch({ type: "initialize-strich" });
 
     return () => {
       closeBroadcastChannel();
@@ -388,13 +378,6 @@ function App(): JSX.Element {
           <Routes>
             <Route path="/terms" element={<TermsScreen />} />
             <Route path="*" element={<NoWASMScreen />} />
-          </Routes>
-        </HashRouter>
-      ) : !isLocalStorageAvailable() ? (
-        <HashRouter>
-          <Routes>
-            <Route path="/terms" element={<TermsScreen />} />
-            <Route path="*" element={<LocalStorageNotAccessibleScreen />} />
           </Routes>
         </HashRouter>
       ) : !hasStack ? (

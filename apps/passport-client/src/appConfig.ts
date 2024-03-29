@@ -57,6 +57,22 @@ if (
   alert("SCANDIT_LICENSE_KEY not set");
 }
 
+if (
+  !process.env.PASSPORT_SERVER_URL &&
+  global.window &&
+  !!global.window.alert
+) {
+  alert("PASSPORT_SERVER_URL not set");
+}
+
+if (
+  !process.env.FROGCRYPTO_SERVER_URL &&
+  global.window &&
+  !!global.window.alert
+) {
+  alert("FROGCRYPTO_SERVER_URL not set");
+}
+
 export const appConfig: AppConfig = {
   devMode: process.env.NODE_ENV !== "production",
   zupassServer: process.env.PASSPORT_SERVER_URL as string,

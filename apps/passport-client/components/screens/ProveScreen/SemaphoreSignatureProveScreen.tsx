@@ -96,7 +96,7 @@ export function SemaphoreSignatureProveScreen({
       }
       safeRedirect(req.returnUrl, serializedPCD);
     }
-  }, [identity, req.args, req.options, req.postMessage, req.returnUrl, self]);
+  }, [identity, req.args, req.options, req.returnUrl, self]);
 
   const lines: ReactNode[] = [];
 

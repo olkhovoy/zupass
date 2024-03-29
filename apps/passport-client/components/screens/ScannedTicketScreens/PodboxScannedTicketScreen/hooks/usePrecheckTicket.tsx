@@ -1,13 +1,11 @@
 import {
   PODBOX_CREDENTIAL_REQUEST,
-  PodboxTicketActionPreCheckResult,
-  requestPodboxTicketActionPreCheck
+  PodboxTicketActionPreCheckResult
 } from "@pcd/passport-interface";
 import { useCallback, useEffect, useState } from "react";
 import urljoin from "url-join";
 import { appConfig } from "../../../../../src/appConfig";
 import {
-  useCredentialManager,
   useDispatch,
   useUserIdentityPCD
 } from "../../../../../src/appHooks";
@@ -39,7 +37,6 @@ export function usePreCheckTicket(
   >();
   const identityPCD = useUserIdentityPCD();
   const dispatch = useDispatch();
-  const credentialManager = useCredentialManager();
 
   const doPreCheckTicket = useCallback(
     async (ticketId: string | undefined, eventId: string | undefined) => {
@@ -52,7 +49,31 @@ export function usePreCheckTicket(
         return;
       }
 
-      const preCheckTicketResult = await requestPodboxTicketActionPreCheck(
+      if (!identityPCD) {
+        await dispatch({ type: "participant-invalid" });
+        return;
+      }
+
+      const serializedEmailPCD = await EmailPCDPackage.serialize(emailPCDs[0]);
+      const payload = createTicketActionCredentialPayload(
+        serializedEmailPCD,
+        { checkin: true },
+        eventId,
+        ticketId
+      );
+
+      const signedPayload = await SemaphoreSignaturePCDPackage.prove({
+        identity: {
+          argumentType: ArgumentTypeName.PCD,
+          value: await SemaphoreIdentityPCDPackage.serialize(identityPCD)
+        },
+        signedMessage: {
+          argumentType: ArgumentTypeName.String,
+          value: JSON.stringify(payload)
+        }
+      });
+
+      const preCheckTicketResult = await requestGenericIssuancePreCheck(
         urljoin(appConfig.zupassServer, "generic-issuance/api/pre-check"),
         await credentialManager.requestCredential(PODBOX_CREDENTIAL_REQUEST),
         { checkin: true },
@@ -61,13 +82,16 @@ export function usePreCheckTicket(
       );
       setResult(preCheckTicketResult);
     },
-    [credentialManager, dispatch, identityPCD]
+    [dispatch, identityPCD, pcdCollection]
   );
 
   useEffect(() => {
     doPreCheckTicket(ticketId, eventId);
   }, [doPreCheckTicket, eventId, ticketId]);
 
+  if (result) {
+    return { loading: false, result };
+  } else {
   if (result) {
     return { loading: false, result };
   } else {

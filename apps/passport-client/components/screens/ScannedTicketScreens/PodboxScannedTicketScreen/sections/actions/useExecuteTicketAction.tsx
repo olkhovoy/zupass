@@ -41,6 +41,18 @@ export function useExecuteTicketAction({
   > => {
     if (loading) return;
 
+    const emailPCDs = pcdCollection.getPCDsByType(
+      EmailPCDTypeName
+    ) as EmailPCD[];
+
+    if (emailPCDs.length !== 1) {
+      return;
+    }
+
+    if (!identityPCD) {
+      return;
+    }
+
     setLoading(true);
 
     const checkinResult = await requestPodboxTicketAction(

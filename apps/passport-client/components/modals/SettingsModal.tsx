@@ -4,6 +4,7 @@ import { useDispatch, useHasSetupPassword, useSelf } from "../../src/appHooks";
 import { Button, CenterColumn, Spacer, TextCenter } from "../core";
 import { LinkButton } from "../core/Button";
 import { AccountExportButton } from "../shared/AccountExportButton";
+import { GetTicketButton } from "../shared/GetTicketButton";
 
 export function SettingsModal({
   isProveOrAddScreen
@@ -50,6 +51,7 @@ export function SettingsModal({
             </LinkButton>
             <Spacer h={16} />
             <AccountExportButton />
+            <GetTicketButton />
             <Spacer h={16} />
             <LinkButton $primary={true} to="/import" onClick={close}>
               Import

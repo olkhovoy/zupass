@@ -18,7 +18,12 @@ routes.get("/feeds", async (req, res) => {
 routes.post("/feeds", async (req, res) => {
   const request = req.body as PollFeedRequest;
 
-  return res.json(await feedHost.handleFeedRequest(request));
+  try {
+    return res.json(await feedHost.handleFeedRequest(request));
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send((error as Error).message);
+  }
 });
 
 routes.get("/feeds/:feedId", async (req, res) => {

@@ -66,7 +66,6 @@ export async function initFeedHost() {
             throw new Error(`Missing credential`);
           }
           const { payload } = await verifyFeedCredential(req.pcd);
-
           if (payload?.pcd && payload.pcd.type === EmailPCDPackage.name) {
             const pcd = await EmailPCDPackage.deserialize(payload?.pcd.pcd);
             const verified =
@@ -79,6 +78,8 @@ export async function initFeedHost() {
                   pcd.claim.semaphoreId
                 )
               };
+            } else {
+              throw new Error("pcd verification failed");
             }
           }
           return { actions: [] };

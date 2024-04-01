@@ -28,7 +28,7 @@ export function SettingsModal({
   return (
     <>
       <TextCenter>
-        <IoSettingsOutline color={"#468c80"} size={34} />
+        <IoSettingsOutline color={"#8c4663"} size={34} />
       </TextCenter>
       <Spacer h={16} />
       <CenterColumn>
@@ -51,6 +51,7 @@ export function SettingsModal({
             </LinkButton>
             <Spacer h={16} />
             <AccountExportButton />
+            <Spacer h={16} />
             <GetTicketButton />
             <Spacer h={16} />
             <LinkButton $primary={true} to="/import" onClick={close}>

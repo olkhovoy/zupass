@@ -13,7 +13,6 @@ export function GetTicketButton(): JSX.Element {
   const pcds = usePCDCollection();
   const subscriptions = useSubscriptions();
 
-  const [url, setUrl] = useState<string | null>(null);
   const [hash, setHash] = useState<string | null>(null);
   // const [emailPcd, setEmailPCD] = useState<string | null>(null);
 
@@ -39,5 +38,5 @@ export function GetTicketButton(): JSX.Element {
     });
     console.log(ticketResponse.status);
   }, []);
-  return url && <Button onClick={getTicket}>Get ticket</Button>;
+  return <Button onClick={getTicket}>Get ticket</Button>;
 }

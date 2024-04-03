@@ -46,7 +46,7 @@ import { ProveScreen } from "../components/screens/ProveScreen/ProveScreen";
 import { ScanScreen } from "../components/screens/ScanScreen";
 import { DevconnectCheckinByIdScreen } from "../components/screens/ScannedTicketScreens/DevconnectCheckinByIdScreen";
 import { PodboxScannedTicketScreen } from "../components/screens/ScannedTicketScreens/PodboxScannedTicketScreen/PodboxScannedTicketScreen";
-import { SecondPartyTicketVerifyScreen } from "../components/screens/ScannedTicketScreens/SecondPartyTicketVerifyScreen";
+import { ZkTicketVerificationScreen } from "../components/screens/ScannedTicketScreens/ZkTicketVerificationScreen";
 import { ServerErrorScreen } from "../components/screens/ServerErrorScreen";
 import { SubscriptionsScreen } from "../components/screens/SubscriptionsScreen";
 import { TermsScreen } from "../components/screens/TermsScreen";
@@ -334,7 +334,7 @@ function RouterImpl(): JSX.Element {
           <Route path="prove" element={<ProveScreen />} />
           <Route path="scan" element={<ScanScreen />} />
           {/* This route is used by non-Devconnect tickets */}
-          <Route path="verify" element={<SecondPartyTicketVerifyScreen />} />
+          <Route path="verify" element={<ZkTicketVerificationScreen />} />
           {/* This route is used to check in a Devconnect ticket with only
               the ticket ID in the parameters */}
           <Route

@@ -403,13 +403,12 @@ async function verify(
   const result = await requestVerifyTicket(appConfig.zupassServer, {
     pcd: JSON.stringify(serializedPCD)
   });
-  //TODO: clean up, mocked to make verification work
-  if (true || (result.success && result.value.verified)) {
+  if (result.success && result.value.verified) {
     // This check is mostly for the benefit of the TypeScript type-checker
     // If requestVerifyTicket() succeeded then the PCD type must be
     // EdDSATicketPCD or ZKEdDSAEventTicketPCD
     if (isEdDSATicketPCD(pcd) || isZKEdDSAEventTicketPCD(pcd)) {
-      if (true || result.value.verified) {
+      if (result.value.verified) {
         return {
           outcome: VerifyOutcome.KnownTicketType,
           productId: isEdDSATicketPCD(pcd)

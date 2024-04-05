@@ -21,7 +21,7 @@ export function generateNonce(
       req.session.nonce = hexToBigInt(randomHex).toString();
 
       console.log("req.session", req.session);
-      // await req.session.save();
+      await req.session.save();
 
       res.status(200).send(req.session.nonce);
     } catch (error) {

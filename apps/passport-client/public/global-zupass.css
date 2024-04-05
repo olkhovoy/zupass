@@ -1,15 +1,15 @@
 html {
-  --bg-dark-primary: #19473f;
-  --bg-lite-primary: #206b5e;
+  --bg-dark-primary: #56575a;
+  --bg-lite-primary: #82a39d;
   --bg-dark-gray: #2a3231;
   --bg-lite-gray: #374b49;
-  --primary-dark: #325f57;
-  --primary-darker: #22413b;
+  --primary-dark: #669f94;
+  --primary-darker: #477068;
   --primary-lite: #468c80;
   --accent-dark: #fcd270;
   --accent-darker: #f4c24d;
   --accent-dark-rbg: 252, 210, 112;
-  --accent-lite: #ffe5a4;
+  --accent-lite: white;
   --danger: #a95940;
   --danger-lite: #b36851;
   --danger-bright: #fc9575;

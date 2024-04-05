@@ -94,7 +94,7 @@ function HeaderContent({
 
   let header = null;
   if (isMainIdentity) {
-    header = <>ZUPASS IDENTITY</>;
+    header = <>MY IDENTITY</>;
   } else if (ui && ui.getHeader) {
     header = ui.getHeader({ pcd });
   } else if (displayOptions?.header) {

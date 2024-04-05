@@ -37,7 +37,7 @@ export const GlobalStyle = createGlobalStyle`
     rgb(250, 250, 249) 100%
   );
   background:linear-gradient(180deg, rgb(251, 237, 206) 16.87%, rgb(250, 250, 249) 100%);
-  color: var(--white);
+  /* color: var(--white); */
   font:
     16px PlexSans,
     system-ui,
@@ -73,7 +73,7 @@ body {
   left: 625px;
   /* position: absolute; */
   z-index: -1;
-  opacity: 0.65;
+  opacity: 1;
   top: 268px;
   transform: rotate(27.74deg);
   width: 544px;
@@ -137,10 +137,24 @@ button {
 border-radius: 15px;
   color: white;
   cursor: pointer;
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  box-shadow:
+    0 0 2px 0 rgba(0, 0, 0, 0.2),
+    0 1px 1px 0 rgba(0, 0, 0, 0.24);
 }
 
 button:disabled {
   cursor: default;
+}
+
+.auth-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  color: #333c3b;
 }
 
 a,

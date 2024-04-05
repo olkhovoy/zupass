@@ -1,3 +1,4 @@
+import { EmailPCDPackage } from "@pcd/email-pcd";
 import { PCDGetRequest, PCDRequestType } from "@pcd/passport-interface";
 import { SemaphoreGroupPCDPackage } from "@pcd/semaphore-group-pcd";
 import { SemaphoreSignaturePCDPackage } from "@pcd/semaphore-signature-pcd";
@@ -16,6 +17,7 @@ import { CenterColumn, H2, Spacer } from "../../core";
 import { MaybeModal } from "../../modals/Modal";
 import { AppContainer } from "../../shared/AppContainer";
 import { SyncingPCDs } from "../../shared/SyncingPCDs";
+import { EmailPCDProveScreen } from "./EmailPCDProveScreen";
 import { GenericProveScreen } from "./GenericProveScreen";
 import { SemaphoreGroupProveScreen } from "./SemaphoreGroupProveScreen";
 import { SemaphoreSignatureProveScreen } from "./SemaphoreSignatureProveScreen";
@@ -78,6 +80,7 @@ function getScreen(request: PCDGetRequest): JSX.Element | null {
   let title: string;
   let body: JSX.Element;
 
+  console.log("request.pcdType", request.pcdType);
   if (request.options?.genericProveScreen) {
     return <GenericProveScreen req={request} />;
   } else if (request.pcdType === SemaphoreGroupPCDPackage.name) {
@@ -87,6 +90,9 @@ function getScreen(request: PCDGetRequest): JSX.Element | null {
       title = "Prove membership";
     }
     body = <SemaphoreGroupProveScreen req={request} />;
+  } else if (request.pcdType === EmailPCDPackage.name) {
+    title = "Sign in with email and keypair";
+    body = <EmailPCDProveScreen />;
   } else if (request.pcdType === SemaphoreSignaturePCDPackage.name) {
     if (request.options?.title !== undefined) {
       title = request.options?.title;

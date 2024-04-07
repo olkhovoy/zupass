@@ -1,10 +1,10 @@
 import { EmailPCD, EmailPCDPackage } from "@pcd/email-pcd";
 import { ArgumentTypeName } from "@pcd/pcd-types";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useIdentity, usePCDs } from "../../../src/appHooks";
 import { Button } from "../../core";
 
-export const EmailPCDProveScreen = (props: any) => {
+export const EmailPCDProveScreen = (): React.ReactNode => {
   const pcds = usePCDs();
   const identity = useIdentity();
 
@@ -21,9 +21,11 @@ export const EmailPCDProveScreen = (props: any) => {
   useEffect(() => {
     const emailPcd = pcds.find((pcd) => pcd.type === EmailPCDPackage.name);
     setPCD(emailPcd as EmailPCD);
-  }, []);
+  }, [pcds]);
 
-  const onProveClick = (e: any) => {
+  const onProveClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void => {
     e.preventDefault();
 
     EmailPCDPackage.prove({

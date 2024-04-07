@@ -21,22 +21,15 @@ import {
   useVisiblePCDsInFolder
 } from "../../../src/appHooks";
 import { useSyncE2EEStorage } from "../../../src/useSyncE2EEStorage";
-import { isEdgeCityFolder, isFrogCryptoFolder } from "../../../src/util";
+import { isEdgeCityFolder } from "../../../src/util";
 import { Button, Placeholder, Spacer } from "../../core";
 import { MaybeModal } from "../../modals/Modal";
 import { AppContainer } from "../../shared/AppContainer";
 import { AppHeader } from "../../shared/AppHeader";
 import { LoadingIssuedPCDs } from "../../shared/LoadingIssuedPCDs";
 import { PCDCardList } from "../../shared/PCDCardList";
-import { EdgeCityHome } from "../EdgeCityScreens/EdgeCityHome";
-import { FrogCryptoHomeSection } from "../FrogScreens/FrogCryptoHomeSection";
-import { FrogFolder } from "../FrogScreens/FrogFolder";
-import {
-  FolderCard,
-  FolderDetails,
-  FolderEntryContainer,
-  FolderExplorerContainer
-} from "./Folder";
+
+import { FolderCard, FolderDetails, FolderExplorerContainer } from "./Folder";
 
 export const HomeScreen = React.memo(HomeScreenImpl);
 
@@ -118,7 +111,6 @@ export function HomeScreenImpl(): JSX.Element | null {
   }, []);
 
   const isRoot = isRootFolder(browsingFolder);
-  const isFrogCrypto = isFrogCryptoFolder(browsingFolder);
   const isEdgeCity = isEdgeCityFolder(browsingFolder);
 
   // scroll to top when we navigate to this page
@@ -182,20 +174,10 @@ export function HomeScreenImpl(): JSX.Element | null {
                       />
                     );
                   })}
-              {isRoot && (
-                <FrogFolder
-                  Container={FrogFolderContainer}
-                  onFolderClick={onFolderClick}
-                />
-              )}
             </FolderExplorerContainer>
           )}
 
-          {isFrogCrypto ? (
-            <FrogCryptoHomeSection />
-          ) : isEdgeCity ? (
-            <EdgeCityHome />
-          ) : (
+          {
             <>
               {!(foldersInFolder.length === 0 && isRoot) && <Separator />}
               {pcdsInFolder.length > 0 ? (
@@ -218,7 +200,7 @@ export function HomeScreenImpl(): JSX.Element | null {
                 </>
               )}
             </>
-          )}
+          }
         </Placeholder>
         <Spacer h={24} />
       </AppContainer>

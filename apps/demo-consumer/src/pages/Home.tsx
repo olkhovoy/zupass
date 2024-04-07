@@ -1,18 +1,15 @@
 import { useContext } from "react";
 import { AuthContext } from "../components/AuthContext";
-import { PCDForm } from "../components/PCDForm";
 import { Auth } from "./Auth";
+import { Launchpad } from "./Launchpad";
 
 function Home(): JSX.Element {
   const { isLoggedIn } = useContext(AuthContext);
   return (
-    <div className="App">
-      <div className="ellipse grid-center" />
-      <div className="form-container grid-center">
-        {isLoggedIn && <PCDForm />}
+    <> 
+        {isLoggedIn && <Launchpad />}
         {!isLoggedIn && <Auth />}
-      </div>
-    </div>
+      </>
   );
 }
 

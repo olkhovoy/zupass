@@ -16,19 +16,22 @@ const AuthControl = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
-const Message = styled.p`
-  color: #605f5f;
-`;
-export const Auth = (props: any) => {
+export const Auth = (): React.ReactNode => {
   const { podValues, setIsLoggedIn, setPodValues } = useContext(AuthContext);
   const [pcdStr] = useZupassPopupMessages();
 
-  const { signatureProof } = useSemaphoreSignatureProof(pcdStr, () => {
-    console.log("proof verified");
-    setIsLoggedIn(true);
-  });
+  const { signatureProof: _signatureProof } = useSemaphoreSignatureProof(
+    pcdStr,
+    () => {
+      console.log("proof verified");
+      setIsLoggedIn(true);
+    }
+  );
 
   function prettyPrint(decimalStr: string): string {
     const str = semaphoreIdToBigInt(decimalStr).toString(16);
@@ -37,7 +40,7 @@ export const Auth = (props: any) => {
   useEffect(() => {
     (async (): Promise<void> => {
       if (pcdStr) {
-        let payload = JSON.parse(pcdStr);
+        const payload = JSON.parse(pcdStr);
         console.log(payload);
         const pcd = await EmailPCDPackage.deserialize(payload.pcd);
         console.log("received pcd for email", pcd.claim);
@@ -50,7 +53,7 @@ export const Auth = (props: any) => {
         setIsLoggedIn(true);
       }
     })();
-  }, [pcdStr]);
+  }, [pcdStr, podValues, setIsLoggedIn, setPodValues]);
 
   // This is basically what ZuAuth does, need to get unique nonce from server
   const requestSignature = useCallback(
@@ -74,9 +77,12 @@ export const Auth = (props: any) => {
   //   };
   return (
     <AuthControl>
-      <p className="auth-result">Please authenticate with your email DID</p>
+      <p className="auth-result">Please authenticate your DID wallet</p>
       <button className="form-field" onClick={getEmailPCDWithoutProving}>
-        Login
+        Prove email
+      </button>
+      <button className="form-field" onClick={requestSignature}>
+        Prove signature
       </button>
     </AuthControl>
   );

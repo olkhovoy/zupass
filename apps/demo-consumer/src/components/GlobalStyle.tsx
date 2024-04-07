@@ -134,16 +134,21 @@ input {
 
 button {
   background:#7d8ee599;
-border-radius: 15px;
+border-radius: 5px;
   color: white;
   cursor: pointer;
   font-family: "Roboto", sans-serif;
   font-size: 16px;
+  /* margin: 10px;
+  min-height: 40px;*/
+  min-width: 240px; 
   box-shadow:
     0 0 2px 0 rgba(0, 0, 0, 0.2),
     0 1px 1px 0 rgba(0, 0, 0, 0.24);
 }
-
+p {
+  margin: 5px;
+}
 button:disabled {
   cursor: default;
 }

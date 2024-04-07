@@ -1,20 +1,25 @@
 import { constructZupassPcdAddRequestUrl } from "@pcd/passport-interface";
 import { POD, podEntriesFromSimplifiedJSON } from "@pcd/pod";
 import { PODPCD, PODPCDPackage } from "@pcd/pod-pcd";
-import { FormEvent, useContext, useState } from "react";
+import { ChangeEvent, FormEvent, useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 import { sendZupassRequest } from "../util";
 import { AuthContext } from "./AuthContext";
 
-export const PCDForm = (props: any) => {
+export const PCDForm = (): React.ReactNode => {
   const [submitted, setSubmitted] = useState(false);
-  const [valid, setValid] = useState(false);
-  const { podValues, setPodValues } = useContext(AuthContext);
+  const [_valid, setValid] = useState(false);
+  const { isLoggedIn, podValues, setPodValues } = useContext(AuthContext);
 
+  const navigate = useNavigate();
   const EXAMPLE_EDDSA_PRIVATE_KEY =
     "0001020304050607080900010203040506070809000102030405060708090001";
 
-  const handleInputChange = (event: any) => {
+  if (!isLoggedIn) {
+    navigate("/");
+  }
+  const handleInputChange = (event: ChangeEvent): void => {
     event.preventDefault();
 
     const { name, value } = event.target;
@@ -48,7 +53,7 @@ export const PCDForm = (props: any) => {
     sendZupassRequest(url);
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent): void => {
     e.preventDefault();
     if (podValues.firstName && podValues.lastName && podValues.email) {
       setValid(true);
@@ -58,6 +63,8 @@ export const PCDForm = (props: any) => {
     addPODPCD(JSON.stringify(podValues), "Test PODs")
       .then(() => {
         console.log("pcd added");
+
+        navigate("/");
       })
       .catch((err) => {
         console.error("failed to add pcd", err);
@@ -67,8 +74,6 @@ export const PCDForm = (props: any) => {
   return (
     <div>
       <div className="auth-result">
-        <p>Authenticated as {podValues.email}</p>
-        <p>Your public key is {podValues.owner}</p>
         <p>Please fill the form below to obtain a</p>
         <p>Provable Data Object</p>
       </div>

@@ -17,9 +17,26 @@ import { SyncingPCDs } from "../../shared/SyncingPCDs";
  * Screen that allows the user to respond to a `PCDAddRequest` and add
  * a PCD into their wallet without proving it.
  */
+
+const Footer = styled.div`
+    margin-left: 8px; // почему-то объект смещён на 8px влево
+    
+    max-width: 372px;
+    width: 100%;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    background-color: white;
+    color: black;
+    bottom: 0;
+    box-shadow: rgba(17,17,26,0.1) 0px -10px 10px
+`;
+
 export function JustAddScreen({
-  request
-}: {
+                                request
+                              }: {
   request: PCDAddRequest;
 }): JSX.Element {
   const dispatch = useDispatch();
@@ -48,17 +65,20 @@ export function JustAddScreen({
     content = (
       <>
         <H2>{"ADD PCD".toUpperCase()}</H2>
-        <Spacer h={16} />
         {pcd && <PCDCard pcd={pcd} expanded={true} hideRemoveButton={true} />}
-        {request.folder && (
-          <div>
-            PCD will be added to folder:
-            <br /> <strong>{request.folder}</strong>
-          </div>
-        )}
-        {error && JSON.stringify(error)}
-        <Spacer h={16} />
-        <Button onClick={onAddClick}>Add</Button>
+        <Spacer h={64} />
+        <Footer>
+          {request.folder && (
+            <div>
+              PCD will be added to folder:
+              <br /> <strong>{request.folder}</strong>
+            </div>
+          )}
+          {error && JSON.stringify(error)}
+          <Spacer h={8} />
+          <Button onClick={onAddClick}>Add</Button>
+        </Footer>
+
       </>
     );
   } else {
@@ -70,9 +90,8 @@ export function JustAddScreen({
       <MaybeModal fullScreen isProveOrAddScreen={true} />
       <AppContainer bg="gray">
         <Container>
-          <Spacer h={16} />
-          <AppHeader isProveOrAddScreen={true} />
-          <Spacer h={16} />
+          {/*<AppHeader isProveOrAddScreen={true} />*/}
+          {/*<Spacer h={16} />*/}
           {content}
         </Container>
       </AppContainer>
@@ -81,8 +100,8 @@ export function JustAddScreen({
 }
 
 const Container = styled.div`
-  padding: 16px;
-  width: 100%;
-  height: 100%;
-  max-width: 100%;
+    //padding: 16px;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
 `;

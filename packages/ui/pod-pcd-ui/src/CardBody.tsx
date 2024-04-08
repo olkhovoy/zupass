@@ -26,6 +26,12 @@ const Text = styled.p`
   margin-top: -5px;
 `;
 
+const Container = styled.div`
+  padding: 16px;
+  overflow: hidden;
+  width: 100%;
+`;
+
 export const PODPCDUI: PCDUI<PODPCD> = {
   renderCardBody: PODPCDCardBody
 };
@@ -83,8 +89,4 @@ function PODPCDCardBody({ pcd }: { pcd: PODPCD }): JSX.Element {
   );
 }
 
-const Container = styled.div`
-  padding: 16px;
-  overflow: hidden;
-  width: 100%;
-`;
+

@@ -60,7 +60,7 @@ export const PCDForm = (): React.ReactNode => {
     }
     setSubmitted(true);
 
-    addPODPCD(JSON.stringify(podValues), "Test PODs")
+    addPODPCD(JSON.stringify(podValues), "My docs")
       .then(() => {
         console.log("pcd added");
 

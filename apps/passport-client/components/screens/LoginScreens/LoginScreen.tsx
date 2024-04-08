@@ -19,6 +19,7 @@ import {
   setPendingViewFrogCryptoRequest,
   setPendingViewSubscriptionsRequest
 } from "../../../src/sessionStorage";
+import { ConnectKitButton } from "connectkit";
 import {
   BigInput,
   Button,
@@ -141,9 +142,9 @@ export function LoginScreen(): JSX.Element {
       ) : (
         <>
           <TextCenter>
-            <H1>ZUPASS</H1>
+            <H1>Web3 Id</H1>
             <Spacer h={24} />
-            This is an experimental personal cryptography manager, powered by
+            This is an experimental personal credentials manager, powered by
             Zero-Knowledge.
           </TextCenter>
         </>
@@ -171,6 +172,9 @@ export function LoginScreen(): JSX.Element {
             Continue
           </Button>
         </form>
+        <Spacer h={96} />
+        <span>OR Login with web3</span>
+        <ConnectKitButton />
       </CenterColumn>
       <Spacer h={64} />
     </AppContainer>

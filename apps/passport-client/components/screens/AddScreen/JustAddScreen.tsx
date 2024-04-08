@@ -1,5 +1,4 @@
 import { PCDAddRequest } from "@pcd/passport-interface";
-import { getErrorMessage } from "@pcd/util";
 import { useCallback, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useIsSyncSettled } from "../../../src/appHooks";
@@ -9,7 +8,6 @@ import { Button, H2, Spacer } from "../../core";
 import { MaybeModal } from "../../modals/Modal";
 import { AddedPCD } from "../../shared/AddedPCD";
 import { AppContainer } from "../../shared/AppContainer";
-import { AppHeader } from "../../shared/AppHeader";
 import { PCDCard } from "../../shared/PCDCard";
 import { SyncingPCDs } from "../../shared/SyncingPCDs";
 
@@ -19,24 +17,23 @@ import { SyncingPCDs } from "../../shared/SyncingPCDs";
  */
 
 const Footer = styled.div`
-    margin-left: 8px; // почему-то объект смещён на 8px влево
-    
-    max-width: 372px;
-    width: 100%;
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    align-content: center;
-    justify-content: center;
-    background-color: white;
-    color: black;
-    bottom: 0;
-    box-shadow: rgba(17,17,26,0.1) 0px -10px 10px
+  text-align: center;
+  width: 100%;
+  left: 0;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  background-color: white;
+  color: black;
+  bottom: 0;
+  box-shadow: rgba(17, 17, 26, 0.1) 0px -10px 10px;
 `;
 
 export function JustAddScreen({
-                                request
-                              }: {
+  request
+}: {
   request: PCDAddRequest;
 }): JSX.Element {
   const dispatch = useDispatch();
@@ -44,20 +41,20 @@ export function JustAddScreen({
   const { error, pcd } = useDeserialized(request.pcd);
   const syncSettled = useIsSyncSettled();
 
-  const onAddClick = useCallback(async () => {
+  const onAddClick = useCallback(() => {
     try {
-      await dispatch({
+      dispatch({
         type: "add-pcds",
         pcds: [request.pcd],
         folder: request.folder
       });
       setAdded(true);
     } catch (e) {
-      await err(dispatch, "Error Adding PCD", getErrorMessage(e));
+      err(dispatch, "Error Adding PCD", e.message);
     }
   }, [dispatch, request.folder, request.pcd]);
 
-  let content;
+  let content: JSX.Element;
 
   if (!syncSettled) {
     return <SyncingPCDs />;
@@ -70,15 +67,16 @@ export function JustAddScreen({
         <Footer>
           {request.folder && (
             <div>
-              PCD will be added to folder:
+              This document will be added to
               <br /> <strong>{request.folder}</strong>
             </div>
           )}
           {error && JSON.stringify(error)}
           <Spacer h={8} />
-          <Button onClick={onAddClick}>Add</Button>
+          <Button styles={{ borderRadius: "10px" }} onClick={onAddClick}>
+            Add
+          </Button>
         </Footer>
-
       </>
     );
   } else {
@@ -100,8 +98,8 @@ export function JustAddScreen({
 }
 
 const Container = styled.div`
-    //padding: 16px;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
+  //padding: 16px;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
 `;

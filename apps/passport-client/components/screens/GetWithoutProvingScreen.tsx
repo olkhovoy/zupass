@@ -111,9 +111,9 @@ export function GetWithoutProvingScreen(): JSX.Element | null {
           <Spacer h={16} />
           <H1>Get {request.pcdType}</H1>
           <p>
-            This website is requesting a pcd of type {request.pcdType} from your
-            Zupass. Choose the one you want to return, and click 'Send' below to
-            give it to the website.
+            This website is requesting a document of type {request.pcdType} from
+            your DID Wallet. Choose the one you want to return, and click 'Send'
+            below to give it to the website.
           </p>
           <Spacer h={16} />
           <Select

@@ -74,14 +74,129 @@ import {
 import { registerServiceWorker } from "../src/registerServiceWorker";
 import { AppState, StateEmitter } from "../src/state";
 import { pollUser } from "../src/user";
+import { Web3Provider } from "../src/web3Provider";
 
-function useBackgroundJobs(): void {
-  const { update, getState, dispatch } = useStateContext();
+class App extends React.Component<object, AppState> {
+  state = undefined as AppState | undefined;
+  readonly BG_POLL_INTERVAL_MS = 1000 * 60;
+  lastBackgroundPoll = 0;
+  activePollTimout: NodeJS.Timeout | undefined = undefined;
 
-  useEffect(() => {
-    let activePollTimeout: NodeJS.Timeout | undefined = undefined;
-    let lastBackgroundPoll = 0;
-    const BG_POLL_INTERVAL_MS = 1000 * 60;
+  stateEmitter: StateEmitter = new Emitter();
+  update = (diff: Pick<AppState, keyof AppState>): void => {
+    this.setState(diff, () => {
+      this.stateEmitter.emit(this.state);
+    });
+  };
+
+  dispatch = (action: Action): Promise<void> =>
+    dispatch(action, this.state, this.update);
+  componentDidMount(): void {
+    loadInitialState().then((s) => this.setState(s, this.startBackgroundJobs));
+    setupBroadcastChannel(this.dispatch);
+    setupUsingLaserScanning();
+  }
+  componentWillUnmount(): void {
+    closeBroadcastChannel();
+  }
+  stateContextState: StateContextValue = {
+    getState: () => this.state,
+    stateEmitter: this.stateEmitter,
+    dispatch: this.dispatch,
+    update: this.update
+  };
+
+  render(): JSX.Element {
+    const { state } = this;
+
+    if (!state) {
+      return null;
+    }
+
+    const hasStack = !!state.error?.stack;
+    return (
+      <StateContext.Provider value={this.stateContextState}>
+        <Web3Provider>
+          {!isWebAssemblySupported() ? (
+            <HashRouter>
+              <Routes>
+                <Route path="/terms" element={<TermsScreen />} />
+                <Route path="*" element={<NoWASMScreen />} />
+              </Routes>
+            </HashRouter>
+          ) : !hasStack ? (
+            <Router />
+          ) : (
+            <HashRouter>
+              <Routes>
+                <Route path="*" element={<AppContainer bg="gray" />} />
+              </Routes>
+            </HashRouter>
+          )}
+        </Web3Provider>
+      </StateContext.Provider>
+    );
+  }
+
+  // Create a React error boundary
+  static getDerivedStateFromError(error: Error): Partial<AppState> {
+    console.log("App caught error", error);
+    const { message, stack } = error;
+    let shortStack = stack.substring(0, 280);
+    if (shortStack.length < stack.length) shortStack += "...";
+    return {
+      error: { title: "Error", message, stack: shortStack }
+    } as Partial<AppState>;
+  }
+
+  startBackgroundJobs = (): void => {
+    console.log("[JOB] Starting background jobs...");
+    document.addEventListener("visibilitychange", () => {
+      this.setupPolling();
+    });
+    this.setupPolling();
+    this.startJobSyncOfflineCheckins();
+    this.jobCheckConnectivity();
+    this.generateCheckinCredential();
+  };
+
+  generateCheckinCredential = async (): Promise<void> => {
+    // This ensures that the check-in credential is pre-cached before the
+    // first check-in attempt.
+    try {
+      await getOrGenerateCheckinCredential(this.state.identity);
+    } catch (e) {
+      console.log("Could not get or generate checkin credential:", e);
+    }
+  };
+
+  jobCheckConnectivity = async (): Promise<void> => {
+    window.addEventListener("offline", () => this.setIsOffline(true));
+    window.addEventListener("online", () => this.setIsOffline(false));
+  };
+
+  setIsOffline(offline: boolean): void {
+    console.log(`[CONNECTIVITY] ${offline ? "offline" : "online"}`);
+    this.update({
+      ...this.state,
+      offline: offline
+    });
+    if (offline) {
+      toast("Offline", {
+        icon: "❌",
+        style: {
+          width: "80vw"
+        }
+      });
+    } else {
+      toast("Back Online", {
+        icon: "👍",
+        style: {
+          width: "80vw"
+        }
+      });
+    }
+  }
 
     /**
      * Idempotently enables or disables periodic polling of jobPollServerUpdates,

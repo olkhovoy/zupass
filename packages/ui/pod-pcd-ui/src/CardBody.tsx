@@ -8,7 +8,23 @@ import {
 import { PCDUI } from "@pcd/pcd-types";
 import { podEntriesToSimplifiedJSON } from "@pcd/pod";
 import { PODPCD, PODPCDPackage } from "@pcd/pod-pcd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import QRCode from "react-qr-code";
+
+const Container2 = styled.div`
+  display: flex;
+  flex-direction: column;
+  //align-items: center;
+`;
+
+const Label = styled.div`
+  font-weight: bold;
+  margin-top: 5px;
+`;
+
+const Text = styled.p`
+  margin-top: -5px;
+`;
 
 export const PODPCDUI: PCDUI<PODPCD> = {
   renderCardBody: PODPCDCardBody
@@ -20,12 +36,32 @@ export const PODPCDUI: PCDUI<PODPCD> = {
 function PODPCDCardBody({ pcd }: { pcd: PODPCD }): JSX.Element {
   const [sigStatus, setSigStatus] = useState("unvalidated");
 
+  useEffect(() => {
+    console.warn("HERE IS THE PCD:")
+    console.log(pcd)
+  }, []);
+
   return (
     <Container>
       <p>This PCD represents a signed POD (Provable Object Data)</p>
       <Separator />
       <FieldLabel>POD Entries</FieldLabel>
-      <pre>{podEntriesToSimplifiedJSON(pcd.claim.entries, 2)}</pre>
+
+      <Container2>
+        {Object.keys(pcd.claim.entries).map((key) => (
+          <div key={key}>
+            <Label>{key}</Label>
+            <Text>{pcd.claim.entries[key].value.toString()}</Text>
+          </div>
+        ))}
+      </Container2>
+
+      <QRCode value={JSON.stringify(pcd)}/>
+
+      {/*<pre>{podEntriesToSimplifiedJSON(pcd.claim.entries, 2)}</pre>*/}
+
+
+
       <Spacer h={8} />
       <FieldLabel>EdDSA Public Key</FieldLabel>
       <HiddenText text={pcd.claim.signerPublicKey} />

@@ -65,6 +65,8 @@
     "@changesets/cli": "^2.26.0",
     "@monorepo-utils/workspaces-to-typescript-project-references": "^2.10.4",
     "@types/react": "^18.0.22",
+    "dotenv": "^16.4.5",
+    "react-qr-code": "^2.0.12",
     "tsx": "^4.6.2",
     "turbo": "^1.13.2",
     "turbowatch": "^2.29.4",

@@ -172,9 +172,18 @@ export function LoginScreen(): JSX.Element {
             Continue
           </Button>
         </form>
-        <Spacer h={96} />
-        <span>OR Login with web3</span>
-        <ConnectKitButton />
+        <Spacer h={48} />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center"
+          }}
+        >
+          <TextCenter>OR login with web3</TextCenter>
+          <Spacer h={16} />
+          <ConnectKitButton />
+        </div>
       </CenterColumn>
       <Spacer h={64} />
     </AppContainer>

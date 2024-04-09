@@ -1,17 +1,20 @@
 import { WagmiProvider, createConfig, http } from "wagmi";
-import { mainnet, sepolia } from "wagmi/chains";
+import { sepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 import customTheme from "./theme.json";
 const config = createConfig(
   getDefaultConfig({
     // Your dApps chains
-    chains: [mainnet, sepolia],
+    chains: [
+      // mainnet,
+      sepolia
+    ],
     transports: {
       // RPC URL for each chain
-      [mainnet.id]: http(
-        `https://eth-mainnet.g.alchemy.com/v2/${process.env.INFURA_ID}`
-      ),
+      // [mainnet.id]: http(
+      //   `https://eth-mainnet.g.alchemy.com/v2/${process.env.INFURA_ID}`
+      // ),
       [sepolia.id]: http(
         `https://sepolia.infura.io/v3/${process.env.INFURA_ID}`
       )

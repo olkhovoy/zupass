@@ -160,6 +160,9 @@ export function loadIdentity(): Identity | null {
 export function saveIdentity(identity: Identity): void {
   window.localStorage["identity"] = identity.toString();
 }
+export function saveIdentityMessage(message: string): void {
+  window.localStorage["identity"] = message;
+}
 
 export function loadPrivacyNoticeAgreed(): number | null {
   const stored = window.localStorage["privacy_notice_agreed"];

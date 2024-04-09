@@ -31,12 +31,40 @@ import {
 } from "../../core";
 import { AppContainer } from "../../shared/AppContainer";
 import { InlineError } from "../../shared/InlineError";
-
+import { useSignMessage, useAccountEffect, useAccount } from "wagmi";
+import { saveIdentityMessage } from "../../../src/localstorage";
 export function LoginScreen(): JSX.Element {
   const dispatch = useDispatch();
   const [error, setError] = useState<string | undefined>();
   const query = useQuery();
   const redirectedFromAction = query?.get("redirectedFromAction") === "true";
+
+  const { signMessageAsync } = useSignMessage();
+  const { address } = useAccount();
+
+  const onConnect = async (data: { address: `0x${string}` }): Promise<void> => {
+    console.log("Connected!", data);
+    const signature = await signMessageAsync({
+      account: data.address,
+      message:
+        "Sign this message to create or restore your wallet identity. Do not sign messages on untrusted websites!!!"
+    });
+    console.log("got signature", signature);
+
+    const email = `${data.address.toLowerCase()}@addr.com`;
+    console.log("registering with email ", email);
+    saveIdentityMessage(signature);
+    dispatch({
+      type: "new-passport",
+      email
+    });
+  };
+  useAccountEffect({
+    onConnect: onConnect,
+    onDisconnect() {
+      console.log("Disconnected!");
+    }
+  });
 
   const pendingGetWithoutProvingRequest = query?.get(
     pendingRequestKeys.getWithoutProving
@@ -183,6 +211,13 @@ export function LoginScreen(): JSX.Element {
           <TextCenter>OR login with web3</TextCenter>
           <Spacer h={16} />
           <ConnectKitButton />
+          <Spacer h={16} />
+          {address && (
+            <Button onClick={(): Promise<void> => onConnect({ address })}>
+              {" "}
+              Sign message
+            </Button>
+          )}
         </div>
       </CenterColumn>
       <Spacer h={64} />

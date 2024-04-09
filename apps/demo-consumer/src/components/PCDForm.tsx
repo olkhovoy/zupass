@@ -1,7 +1,13 @@
 import { constructZupassPcdAddRequestUrl } from "@pcd/passport-interface";
 import { POD, podEntriesFromSimplifiedJSON } from "@pcd/pod";
 import { PODPCD, PODPCDPackage } from "@pcd/pod-pcd";
-import { ChangeEvent, FormEvent, useContext, useState } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useContext,
+  useState
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 import { sendZupassRequest } from "../util";
@@ -10,7 +16,7 @@ import { AuthContext } from "./AuthContext";
 export const PCDForm = (): React.ReactNode => {
   const [submitted, setSubmitted] = useState(false);
   const [_valid, setValid] = useState(false);
-  const { isLoggedIn, podValues, setPodValues } = useContext(AuthContext);
+  const { isLoggedIn, podValues } = useContext(AuthContext);
 
   const navigate = useNavigate();
   const EXAMPLE_EDDSA_PRIVATE_KEY =
@@ -19,15 +25,6 @@ export const PCDForm = (): React.ReactNode => {
   if (!isLoggedIn) {
     navigate("/");
   }
-  const handleInputChange = (event: ChangeEvent): void => {
-    event.preventDefault();
-
-    const { name, value } = event.target;
-    setPodValues((values) => ({
-      ...values,
-      [name]: value
-    }));
-  };
 
   async function addPODPCD(
     podContent: string,
@@ -78,42 +75,46 @@ export const PCDForm = (): React.ReactNode => {
         <p>Provable Data Object</p>
       </div>
       <form className="register-form" onSubmit={handleSubmit}>
-        {
-          <input
-            className="form-field"
-            type="text"
-            placeholder="First name"
-            name="firstName"
-            value={podValues.firstName}
-            onChange={handleInputChange}
-          />
-        }
+        <Input displayName="First name" name="firstName" />
         {submitted && !podValues.firstName && (
           <span id="first-name-error">Please enter a first name</span>
         )}
-        <input
-          className="form-field"
-          type="text"
-          placeholder="Last name"
-          name="lastName"
-          value={podValues.lastName}
-          onChange={handleInputChange}
-        />
+        <Input displayName="Last name" name="lastName" />
         {submitted && !podValues.lastName && (
           <span id="last-name-error">Please enter a last name</span>
         )}
-        <input
-          className="form-field"
-          type="text"
-          placeholder="Phone"
-          name="phone"
-          value={podValues.phone}
-          onChange={handleInputChange}
-        />
+        <Input displayName="Phone" name="phone" />
         <button className="form-field" type="submit">
           Register
         </button>
       </form>
     </div>
+  );
+};
+
+const Input = (props: { name: string; displayName: string }): JSX.Element => {
+  const { podValues, setPodValues } = useContext(AuthContext);
+  const handleInputChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>): void => {
+      console.log("input render", props.name);
+      event.preventDefault();
+
+      const { value } = event.target;
+      setPodValues((values) => ({
+        ...values,
+        [props.name]: value
+      }));
+    },
+    [props.name, setPodValues]
+  );
+
+  return (
+    <input
+      className="form-field"
+      type="text"
+      placeholder={props.displayName}
+      value={podValues[props.name]}
+      onChange={handleInputChange}
+    />
   );
 };

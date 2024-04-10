@@ -10,6 +10,7 @@ import { podEntriesToSimplifiedJSON } from "@pcd/pod";
 import { PODPCD, PODPCDPackage } from "@pcd/pod-pcd";
 import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
+import { constructZupassPcdAddRequestUrl } from "@pcd/passport-interface";
 
 const Container2 = styled.div`
   display: flex;
@@ -43,9 +44,16 @@ function PODPCDCardBody({ pcd }: { pcd: PODPCD }): JSX.Element {
   const [sigStatus, setSigStatus] = useState("unvalidated");
 
   useEffect(() => {
-    console.warn("HERE IS THE PCD:")
-    console.log(pcd)
+    console.warn("HERE IS THE PCD:");
+    console.log(pcd);
   }, []);
+
+  const add_url = constructZupassPcdAddRequestUrl(
+    "http://localhost:3000",
+    "http://localhost:3101",
+    { type: "Add", pcd: JSON.stringify(pcd) },
+    "My docs"
+  );
 
   return (
     <Container>
@@ -62,11 +70,11 @@ function PODPCDCardBody({ pcd }: { pcd: PODPCD }): JSX.Element {
         ))}
       </Container2>
 
-      <QRCode value={JSON.stringify(pcd)}/>
+      {/*<QRCode value={JSON.stringify(pcd)}/>*/}
+      <h1>Add via QR-code</h1>
+      <QRCode value={add_url} />
 
       {/*<pre>{podEntriesToSimplifiedJSON(pcd.claim.entries, 2)}</pre>*/}
-
-
 
       <Spacer h={8} />
       <FieldLabel>EdDSA Public Key</FieldLabel>
@@ -88,5 +96,3 @@ function PODPCDCardBody({ pcd }: { pcd: PODPCD }): JSX.Element {
     </Container>
   );
 }
-
-

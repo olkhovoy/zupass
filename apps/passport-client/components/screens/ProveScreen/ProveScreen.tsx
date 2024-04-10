@@ -92,7 +92,7 @@ function getScreen(request: PCDGetRequest): JSX.Element | null {
     body = <SemaphoreGroupProveScreen req={request} />;
   } else if (request.pcdType === EmailPCDPackage.name) {
     title = "Sign in with email and keypair";
-    body = <EmailPCDProveScreen />;
+    body = <EmailPCDProveScreen req={request} />;
   } else if (request.pcdType === SemaphoreSignaturePCDPackage.name) {
     if (request.options?.title !== undefined) {
       title = request.options?.title;

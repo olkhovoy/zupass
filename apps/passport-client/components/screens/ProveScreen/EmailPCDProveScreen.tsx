@@ -1,10 +1,16 @@
-import { EmailPCD, EmailPCDPackage } from "@pcd/email-pcd";
+import { EmailPCD, EmailPCDArgs, EmailPCDPackage } from "@pcd/email-pcd";
 import { ArgumentTypeName } from "@pcd/pcd-types";
 import React, { useEffect, useState } from "react";
 import { useIdentity, usePCDs } from "../../../src/appHooks";
+import { safeRedirect } from "../../../src/passportRequest";
 import { Button } from "../../core";
+import { PCDGetRequest } from "@pcd/passport-interface";
 
-export const EmailPCDProveScreen = (): React.ReactNode => {
+export const EmailPCDProveScreen = ({
+  req
+}: {
+  req: PCDGetRequest<typeof EmailPCDPackage>;
+}): JSX.Element => {
   const pcds = usePCDs();
   const identity = useIdentity();
 
@@ -23,12 +29,12 @@ export const EmailPCDProveScreen = (): React.ReactNode => {
     setPCD(emailPcd as EmailPCD);
   }, [pcds]);
 
-  const onProveClick = (
+  const onProveClick = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ): void => {
+  ): Promise<void> => {
     e.preventDefault();
 
-    EmailPCDPackage.prove({
+    const args = {
       emailAddress: {
         argumentType: ArgumentTypeName.String,
         value: pcd.claim.emailAddress
@@ -39,13 +45,17 @@ export const EmailPCDProveScreen = (): React.ReactNode => {
       },
       privateKey: {
         argumentType: ArgumentTypeName.String,
-        value: identity.getSecret().toString()
+        value: identity.getSecret().toString(16)
       },
       semaphoreId: {
         argumentType: ArgumentTypeName.String,
         value: pcd.claim.semaphoreId
       }
-    });
+    } as EmailPCDArgs;
+    const { prove, serialize } = EmailPCDPackage;
+    const provedPCD = await prove(args);
+    const serializedPCD = await serialize(provedPCD);
+    safeRedirect(req.returnUrl, serializedPCD);
   };
   return (
     <div>

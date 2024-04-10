@@ -78,7 +78,7 @@ export const Auth = (): React.ReactNode => {
   return (
     <AuthControl>
       <p className="auth-result">Please authenticate your DID wallet</p>
-      <button className="form-field" onClick={getEmailPCDWithoutProving}>
+      <button className="form-field" onClick={getEmailPCD}>
         Prove email
       </button>
       <button className="form-field" onClick={requestSignature}>
@@ -93,6 +93,11 @@ function sendZupassRequest(proofUrl: string): void {
   window.open(popupUrl, "_blank", "width=450,height=600,top=100,popup");
 }
 
+// function getEmailPCDWithProof(): void {
+//   const wallet_url = process.env.WALLET_URL;
+//   getEmailPCD();
+// }
+
 function getEmailPCDWithoutProving(): void {
   const url = getWithoutProvingUrl(
     process.env.WALLET_URL,
@@ -102,13 +107,12 @@ function getEmailPCDWithoutProving(): void {
   sendZupassRequest(url);
 }
 
-export function getEmailPCD(
-  zupassClientUrl: string,
-  popupUrl: string,
-  originalSiteName: string
-): void {
+export function getEmailPCD(): void {
+  const popupUrl = window.location.origin + "#/popup";
+  const zupassClientUrl = process.env.WALLET_URL;
   const proofUrl = constructZupassPcdGetRequestUrl<typeof EmailPCDPackage>(
-    zupassClientUrl,
+    process.env.WALLET_URL,
+    // window.location.origin + "#/popup",
     popupUrl,
     EmailPCDPackage.name,
     {
@@ -119,7 +123,7 @@ export function getEmailPCD(
     },
     {
       title: "Zuzalu Auth",
-      description: originalSiteName,
+      description: "originalSiteName",
       signIn: true
     }
   );

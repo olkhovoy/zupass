@@ -1,4 +1,4 @@
-import { constructZupassPcdAddRequestUrl, PCDAddRequest } from "@pcd/passport-interface";
+import { PCDAddRequest } from "@pcd/passport-interface";
 import { useCallback, useState } from "react";
 import styled from "styled-components";
 import { useDispatch, useIsSyncSettled } from "../../../src/appHooks";
@@ -10,6 +10,7 @@ import { AddedPCD } from "../../shared/AddedPCD";
 import { AppContainer } from "../../shared/AppContainer";
 import { PCDCard } from "../../shared/PCDCard";
 import { SyncingPCDs } from "../../shared/SyncingPCDs";
+import QRCode from "react-qr-code";
 
 /**
  * Screen that allows the user to respond to a `PCDAddRequest` and add
@@ -18,22 +19,22 @@ import { SyncingPCDs } from "../../shared/SyncingPCDs";
 
 const Footer = styled.div`
   text-align: center;
-    width: 100%;
-    left: 0;
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    align-content: center;
-    justify-content: center;
-    background-color: white;
-    color: black;
-    bottom: 0;
-    box-shadow: rgba(17, 17, 26, 0.1) 0px -10px 10px;
+  width: 100%;
+  left: 0;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  background-color: white;
+  color: black;
+  bottom: 0;
+  box-shadow: rgba(17, 17, 26, 0.1) 0px -10px 10px;
 `;
 
 export function JustAddScreen({
-                                request
-                              }: {
+  request
+}: {
   request: PCDAddRequest;
 }): JSX.Element {
   const dispatch = useDispatch();
@@ -56,6 +57,8 @@ export function JustAddScreen({
 
   let content: JSX.Element;
 
+  const [showQR, setShowQR] = useState(false);
+
   if (!syncSettled) {
     return <SyncingPCDs />;
   } else if (!added) {
@@ -73,8 +76,17 @@ export function JustAddScreen({
           )}
           {error && JSON.stringify(error)}
           <Spacer h={8} />
+          {showQR && <QRCode value={window.location.href} />}
+          <Spacer h={8} />
           <Button styles={{ borderRadius: "10px" }} onClick={onAddClick}>
             Add
+          </Button>
+          <Spacer h={8} />
+          <Button
+            styles={{ borderRadius: "10px" }}
+            onClick={(): void => setShowQR(!showQR)}
+          >
+            Add via QR
           </Button>
         </Footer>
       </>
@@ -98,8 +110,8 @@ export function JustAddScreen({
 }
 
 const Container = styled.div`
-    //padding: 16px;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
+  //padding: 16px;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
 `;

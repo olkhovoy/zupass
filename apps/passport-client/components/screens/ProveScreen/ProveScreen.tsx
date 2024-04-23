@@ -18,9 +18,11 @@ import { MaybeModal } from "../../modals/Modal";
 import { AppContainer } from "../../shared/AppContainer";
 import { SyncingPCDs } from "../../shared/SyncingPCDs";
 import { EmailPCDProveScreen } from "./EmailPCDProveScreen";
+import { PODPCDProveScreen } from "./PODPCDProveScreen";
 import { GenericProveScreen } from "./GenericProveScreen";
 import { SemaphoreGroupProveScreen } from "./SemaphoreGroupProveScreen";
 import { SemaphoreSignatureProveScreen } from "./SemaphoreSignatureProveScreen";
+import { PODPCDPackage } from "@pcd/pod-pcd";
 
 export function ProveScreen(): JSX.Element | null {
   useSyncE2EEStorage();
@@ -93,6 +95,9 @@ function getScreen(request: PCDGetRequest): JSX.Element | null {
   } else if (request.pcdType === EmailPCDPackage.name) {
     title = "Sign in with email and keypair";
     body = <EmailPCDProveScreen req={request} />;
+  } else if (request.pcdType === PODPCDPackage.name) {
+    title = "Sign in with email and keypair";
+    body = <PODPCDProveScreen req={request} />;
   } else if (request.pcdType === SemaphoreSignaturePCDPackage.name) {
     if (request.options?.title !== undefined) {
       title = request.options?.title;

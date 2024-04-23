@@ -7,12 +7,14 @@ import { PCDForm } from "./components/PCDForm";
 import { Auth } from "./pages/Auth";
 import Home from "./pages/Home";
 import ZupassPopupRedirect from "./pages/popup";
+import { ProvePhone } from "./pages/ProvePhone";
 
 const router = createHashRouter([
   { path: "popup", element: <ZupassPopupRedirect /> },
   { path: "/", element: <Home /> },
   { path: "/pod", element: <PCDForm /> },
-  { path: "/auth", element: <Auth /> }
+  { path: "/auth", element: <Auth /> },
+  { path: "/phone", element: <ProvePhone /> }
 ]);
 
 createRoot(document.getElementById("root") as HTMLElement).render(

@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
 import { usePCDCollection, useUserIdentityPCD } from "../../src/appHooks";
 import { PCDCard } from "./PCDCard";
+import { PODPCDArgs } from "@pcd/pod-pcd";
 
 type Sortable<T = unknown> = {
   name: string;
@@ -32,7 +33,9 @@ export function PCDCardList({
   pcds,
   defaultSortState,
   allExpanded,
-  hideRemoveButton
+  hideRemoveButton,
+  prove,
+  makeProveArgs
 }: {
   pcds: PCD[];
   /**
@@ -47,6 +50,10 @@ export function PCDCardList({
    * If true, all PCDs will have the remove button hidden.
    */
   hideRemoveButton?: boolean;
+
+  prove?: boolean;
+
+  makeProveArgs?: (args: PODPCDArgs) => void;
 }): JSX.Element {
   const pcdCollection = usePCDCollection();
   const userIdentityPCD = useUserIdentityPCD();
@@ -120,16 +127,21 @@ export function PCDCardList({
           onSortStateChange={setSortState}
         />
       )}
-      {sortedPCDs.map((pcd) => (
-        <PCDCard
-          hideRemoveButton={hideRemoveButton}
-          key={pcd.id}
-          pcd={pcd}
-          isMainIdentity={pcd.id === userIdentityPCDId}
-          onClick={allExpanded ? undefined : onClick}
-          expanded={allExpanded || pcd.id === selectedPCD?.id}
-        />
-      ))}
+      {sortedPCDs.map((pcd) => {
+        console.log("prove=", prove);
+        return (
+          <PCDCard
+            hideRemoveButton={hideRemoveButton}
+            key={pcd.id}
+            pcd={pcd}
+            isMainIdentity={pcd.id === userIdentityPCDId}
+            onClick={allExpanded ? undefined : onClick}
+            expanded={allExpanded || pcd.id === selectedPCD?.id}
+            prove={prove}
+            makeProveArgs={makeProveArgs}
+          />
+        );
+      })}
     </Container>
   );
 }

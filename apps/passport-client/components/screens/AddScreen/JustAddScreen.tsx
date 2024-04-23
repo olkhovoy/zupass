@@ -1,5 +1,6 @@
 import { PCDAddRequest } from "@pcd/passport-interface";
 import { useCallback, useState } from "react";
+import QRCode from "react-qr-code";
 import styled from "styled-components";
 import { useDispatch, useIsSyncSettled } from "../../../src/appHooks";
 import { useDeserialized } from "../../../src/useDeserialized";
@@ -10,7 +11,6 @@ import { AddedPCD } from "../../shared/AddedPCD";
 import { AppContainer } from "../../shared/AppContainer";
 import { PCDCard } from "../../shared/PCDCard";
 import { SyncingPCDs } from "../../shared/SyncingPCDs";
-import QRCode from "react-qr-code";
 
 /**
  * Screen that allows the user to respond to a `PCDAddRequest` and add
@@ -65,7 +65,14 @@ export function JustAddScreen({
     content = (
       <>
         <H2>{"ADD PCD".toUpperCase()}</H2>
-        {pcd && <PCDCard pcd={pcd} expanded={true} hideRemoveButton={true} />}
+        {pcd && (
+          <PCDCard
+            pcd={pcd}
+            expanded={true}
+            hideRemoveButton={true}
+            prove={false}
+          />
+        )}
         <Spacer h={64} />
         <Footer>
           {request.folder && (

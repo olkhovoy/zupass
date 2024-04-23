@@ -4,7 +4,9 @@ const defaults: PodValues = {
   lastName: "",
   email: "",
   phone: "",
-  owner: ""
+  owner: "",
+  creditScore: 30,
+  accountBalance: 100000
 };
 
 export interface PodValues {
@@ -13,12 +15,14 @@ export interface PodValues {
   email: string;
   phone: string;
   owner: string;
+  creditScore: number;
+  accountBalance: number;
 }
 export const AuthContext = createContext({
   isLoggedIn: false,
-  setIsLoggedIn: function (value: React.SetStateAction<Boolean>): void {},
+  setIsLoggedIn: null,
   podValues: defaults,
-  setPodValues: function (value: React.SetStateAction<PodValues>): void {}
+  setPodValues: null
 });
 
 export const AuthContextProvider = ({ children }) => {

@@ -142,7 +142,15 @@ export interface PCDUI<P extends PCD, E = never> {
    * Intended to be used by Zupass. Given a {@link PCD}, renders the body of a card
    * that appears in Zupass representing this {@link PCD}.
    */
-  renderCardBody({ pcd }: { pcd: P } & E): React.ReactElement;
+  renderCardBody({
+    pcd,
+    prove,
+    makeProveArgs
+  }: {
+    pcd: P;
+    prove?: boolean;
+    makeProveArgs?: (args: object) => void;
+  } & E): React.ReactElement;
 
   /**
    * If the {@link DisplayOptions#header} returned by {@link PCDPackage#getDisplayOptions}

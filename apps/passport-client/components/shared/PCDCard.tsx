@@ -28,7 +28,9 @@ function PCDCardImpl({
   expanded,
   onClick,
   hideRemoveButton,
-  hideHeader
+  hideHeader,
+  prove,
+  makeProveArgs
 }: {
   pcd: PCD;
   expanded?: boolean;
@@ -36,6 +38,8 @@ function PCDCardImpl({
   onClick?: (id: string) => void;
   hideRemoveButton?: boolean;
   hideHeader?: boolean;
+  prove?: boolean;
+  makeProveArgs?: (args: object) => void;
 }): JSX.Element {
   const clickHandler = useCallback(() => {
     onClick?.(pcd.id);
@@ -53,7 +57,12 @@ function PCDCardImpl({
             </CardHeader>
           )}
           <CardBodyContainer>
-            <CardBody pcd={pcd} isMainIdentity={isMainIdentity} />
+            <CardBody
+              pcd={pcd}
+              isMainIdentity={isMainIdentity}
+              prove={prove}
+              makeProveArgs={makeProveArgs}
+            />
             {!hideRemoveButton && (
               <CardFooter pcd={pcd} isMainIdentity={isMainIdentity} />
             )}
@@ -204,12 +213,18 @@ function TicketWrapper({ pcd }: { pcd: EdDSATicketPCD }): JSX.Element | null {
 
 function CardBody({
   pcd,
-  isMainIdentity
+  isMainIdentity,
+  prove,
+  makeProveArgs
 }: {
   pcd: PCD;
   isMainIdentity: boolean;
+  prove?: boolean;
+  makeProveArgs?: (args: object) => void;
 }): JSX.Element {
   const pcdCollection = usePCDCollection();
+
+  console.log("CardBody, proveMode = ", prove);
 
   if (isMainIdentity) {
     return <MainIdentityCard />;
@@ -230,7 +245,9 @@ function CardBody({
     const ui = getUI(pcd.type);
     if (ui) {
       const Component = ui.renderCardBody;
-      return <Component pcd={pcd} />;
+      return (
+        <Component pcd={pcd} prove={prove} makeProveArgs={makeProveArgs} />
+      );
     } else {
       console.warn(`Could not find a UI renderer for PCD type "${pcd.type}"`);
     }

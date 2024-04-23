@@ -1,4 +1,3 @@
-import { semaphoreIdToBigInt } from "@pcd/eddsa-frog-pcd";
 import { EmailPCDPackage } from "@pcd/email-pcd";
 import {
   constructZupassPcdGetRequestUrl,
@@ -47,7 +46,7 @@ export const Auth = (): React.ReactNode => {
 
         setPodValues({
           ...podValues,
-          owner: prettyPrint(pcd.claim.semaphoreId),
+          owner: pcd.claim.semaphoreId,
           email: pcd.claim.emailAddress
         });
         setIsLoggedIn(true);
@@ -78,7 +77,7 @@ export const Auth = (): React.ReactNode => {
   return (
     <AuthControl>
       <p className="auth-result">Please authenticate your DID wallet</p>
-      <button className="form-field" onClick={getEmailPCD}>
+      <button className="form-field" onClick={getEmailPCDWithoutProving}>
         Prove email
       </button>
       <button className="form-field" onClick={requestSignature}>
@@ -109,7 +108,6 @@ function getEmailPCDWithoutProving(): void {
 
 export function getEmailPCD(): void {
   const popupUrl = window.location.origin + "#/popup";
-  const zupassClientUrl = process.env.WALLET_URL;
   const proofUrl = constructZupassPcdGetRequestUrl<typeof EmailPCDPackage>(
     process.env.WALLET_URL,
     // window.location.origin + "#/popup",

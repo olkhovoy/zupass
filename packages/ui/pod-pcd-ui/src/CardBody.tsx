@@ -1,3 +1,4 @@
+import { constructZupassPcdAddRequestUrl } from "@pcd/passport-interface";
 import {
   FieldLabel,
   HiddenText,
@@ -7,12 +8,19 @@ import {
 } from "@pcd/passport-ui";
 import { PCDUI } from "@pcd/pcd-types";
 import { PODPCD, PODPCDPackage } from "@pcd/pod-pcd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import QRCode from "react-qr-code";
 
 const Container2 = styled.div`
   display: flex;
   flex-direction: column;
   //align-items: center;
+`;
+const ContainerWide = styled.div`
+  display: flex;
+  width: 120%;
+  flex-direction: column;
+  align-self: center;
 `;
 
 const Label = styled.div`
@@ -34,26 +42,131 @@ export const PODPCDUI: PCDUI<PODPCD> = {
   renderCardBody: PODPCDCardBody
 };
 
+function SelectFieldCheckBox({
+  name,
+  onSelected,
+  selectedFields
+}: {
+  name: string;
+  onSelected: (updated: object) => void;
+  selectedFields: object;
+}): JSX.Element {
+  const [checked, setChecked] = useState(0);
+
+  return (
+    <input
+      type="checkbox"
+      value={checked}
+      onChange={(event: any): void => {
+        event.preventDefault();
+        onSelected({ ...selectedFields, [name]: checked === 1 });
+        setChecked(checked === 1 ? 0 : 1);
+      }}
+    />
+  );
+}
+
 /**
  * This component renders the body of a 'Card' that Zupass uses to display PCDs to the user.
  */
-function PODPCDCardBody({ pcd }: { pcd: PODPCD }): JSX.Element {
+function PODPCDCardBody({
+  pcd,
+  prove,
+  makeProveArgs
+}: {
+  pcd: PODPCD;
+  prove?: boolean;
+  makeProveArgs?: (args: object) => void;
+}): JSX.Element {
   const [sigStatus, setSigStatus] = useState("unvalidated");
+
+  const [selectedFields, setSelectedFields] = useState({});
+
+  const [addUrl, setAddUrl] = useState("");
+  PODPCDPackage.serialize(pcd);
+  useEffect(() => {
+    (async (): Promise<void> => {
+      setAddUrl(
+        constructZupassPcdAddRequestUrl(
+          "http://localhost:3000",
+          "http://localhost:3101",
+          {
+            type: "Add",
+            pcd: JSON.stringify(await PODPCDPackage.serialize(pcd))
+          },
+          "My docs"
+        )
+      );
+    })();
+  }, [pcd]);
+
+  const onSelected = (updated: object): void => {
+    setSelectedFields(updated);
+    console.log("onSelected", updated);
+    if (makeProveArgs) {
+      makeProveArgs(updated);
+    }
+  };
+  if (prove) {
+    return (
+      <ContainerWide>
+        <Separator />
+        <FieldLabel>Select fields to prove</FieldLabel>
+        <Container2>
+          <table>
+            <tbody>
+              {Object.keys(pcd.claim.entries).map((key) => (
+                <tr>
+                  {prove && (
+                    <td>
+                      <SelectFieldCheckBox
+                        name={key}
+                        onSelected={onSelected}
+                        selectedFields={selectedFields}
+                      />
+                    </td>
+                  )}
+                  <td>{key}</td>
+                  <td>{pcd.claim.entries[key].value.toString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Container2>
+      </ContainerWide>
+    );
+  }
 
   return (
     <Container>
-      <p>This PCD represents a signed POD (Provable Object Data)</p>
       <Separator />
-      <FieldLabel>POD Entries</FieldLabel>
+      <FieldLabel>Document content</FieldLabel>
 
       <Container2>
         {Object.keys(pcd.claim.entries).map((key) => (
           <div key={key}>
+            {prove && (
+              <SelectFieldCheckBox
+                name={key}
+                onSelected={setSelectedFields}
+                selectedFields={selectedFields}
+              />
+            )}
             <Label>{key}</Label>
             <Text>{pcd.claim.entries[key].value.toString()}</Text>
           </div>
         ))}
       </Container2>
+
+      {/*<QRCode value={JSON.stringify(pcd)}/>*/}
+      {
+        <div>
+          <h1>Add via QR-code</h1>
+          <QRCode value={addUrl} />
+        </div>
+      }
+
+      {/*<pre>{podEntriesToSimplifiedJSON(pcd.claim.entries, 2)}</pre>*/}
 
       <Spacer h={8} />
       <FieldLabel>EdDSA Public Key</FieldLabel>

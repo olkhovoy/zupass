@@ -31,10 +31,9 @@ export function GetTicketButton(): JSX.Element {
     setSignaturePCD(pcd);
 
     const ticketResponse = await fetch("http://localhost:3100/feeds", {
-      method:"POST",
+      method: "POST",
       headers: [["Content-type", "application/json"]],
-      body: JSON.stringify({"feedId": "1" , pcd}
-      )
+      body: JSON.stringify({ feedId: "1", pcd })
     });
     console.log(ticketResponse.status);
   }, []);

@@ -6,10 +6,10 @@ import { Launchpad } from "./Launchpad";
 function Home(): JSX.Element {
   const { isLoggedIn } = useContext(AuthContext);
   return (
-    <> 
-        {isLoggedIn && <Launchpad />}
-        {!isLoggedIn && <Auth />}
-      </>
+    <>
+      {isLoggedIn && <Launchpad />}
+      {!isLoggedIn && <Auth />}
+    </>
   );
 }
 

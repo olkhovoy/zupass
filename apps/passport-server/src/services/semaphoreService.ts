@@ -133,7 +133,7 @@ export class SemaphoreService {
 
       await this.reloadZuzaluGroups();
       // turned off for devconnect - lots of users = slow global group.
-      // await this.reloadGenericGroup();
+      await this.reloadGenericGroup();
       await this.reloadDevconnectGroups();
       await this.saveHistoricSemaphoreGroups();
 

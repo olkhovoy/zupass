@@ -149,7 +149,7 @@ export interface PCDUI<P extends PCD, E = never> {
   }: {
     pcd: P;
     prove?: boolean;
-    makeProveArgs?: (args: object) => void;
+    makeProveArgs?: (args: object, id: string) => void;
   } & E): React.ReactElement;
 
   /**

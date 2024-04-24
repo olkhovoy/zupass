@@ -53,7 +53,7 @@ export function PCDCardList({
 
   prove?: boolean;
 
-  makeProveArgs?: (args: PODPCDArgs) => void;
+  makeProveArgs?: (args: PODPCDArgs, id: string) => void;
 }): JSX.Element {
   const pcdCollection = usePCDCollection();
   const userIdentityPCD = useUserIdentityPCD();

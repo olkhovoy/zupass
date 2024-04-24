@@ -39,7 +39,7 @@ function PCDCardImpl({
   hideRemoveButton?: boolean;
   hideHeader?: boolean;
   prove?: boolean;
-  makeProveArgs?: (args: object) => void;
+  makeProveArgs?: (args: object, id: string) => void;
 }): JSX.Element {
   const clickHandler = useCallback(() => {
     onClick?.(pcd.id);
@@ -220,7 +220,7 @@ function CardBody({
   pcd: PCD;
   isMainIdentity: boolean;
   prove?: boolean;
-  makeProveArgs?: (args: object) => void;
+  makeProveArgs?: (args: object, id: string) => void;
 }): JSX.Element {
   const pcdCollection = usePCDCollection();
 

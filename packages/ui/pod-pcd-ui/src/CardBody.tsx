@@ -51,16 +51,21 @@ function SelectFieldCheckBox({
   onSelected: (updated: object) => void;
   selectedFields: object;
 }): JSX.Element {
-  const [checked, setChecked] = useState(0);
+  const [checked, setChecked] = useState(false);
 
   return (
     <input
       type="checkbox"
-      value={checked}
+      value={checked ? "true" : "false"}
       onChange={(event: any): void => {
         event.preventDefault();
-        onSelected({ ...selectedFields, [name]: checked === 1 });
-        setChecked(checked === 1 ? 0 : 1);
+        const checkBoxState: boolean = event.target.value === "true";
+        console.debug(event);
+        console.debug(
+          `current state = ${checkBoxState}, setting to ${!checkBoxState}`
+        );
+        onSelected({ ...selectedFields, [name]: checked });
+        setChecked(!checked);
       }}
     />
   );
@@ -76,7 +81,7 @@ function PODPCDCardBody({
 }: {
   pcd: PODPCD;
   prove?: boolean;
-  makeProveArgs?: (args: object) => void;
+  makeProveArgs?: (args: object, id: string) => void;
 }): JSX.Element {
   const [sigStatus, setSigStatus] = useState("unvalidated");
 
@@ -104,7 +109,7 @@ function PODPCDCardBody({
     setSelectedFields(updated);
     console.log("onSelected", updated);
     if (makeProveArgs) {
-      makeProveArgs(updated);
+      makeProveArgs(updated, pcd.id);
     }
   };
   if (prove) {
@@ -116,7 +121,7 @@ function PODPCDCardBody({
           <table>
             <tbody>
               {Object.keys(pcd.claim.entries).map((key) => (
-                <tr>
+                <tr key={key}>
                   {prove && (
                     <td>
                       <SelectFieldCheckBox
